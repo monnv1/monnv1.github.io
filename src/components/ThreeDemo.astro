@@ -1,7 +1,11 @@
-<div class="three-demo" data-three-demo aria-label="Three.js 旋转立方体演示"></div>
+<div class="three-demo-wrap">
+  <div class="three-demo" data-three-demo aria-label="Interactive Three.js cube demo"></div>
+  <p class="three-demo-hint">左键拖拽旋转，滚轮缩放，右键拖拽平移。</p>
+</div>
 
 <script>
   import * as THREE from 'three';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
   const host = document.querySelector('[data-three-demo]');
 
@@ -17,7 +21,20 @@
     scene.add(cube);
     camera.position.z = 3;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
     host.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 1.8;
+    controls.maxDistance = 6;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.2;
+
+    host.addEventListener('pointerdown', () => {
+      controls.autoRotate = false;
+    });
 
     const resize = () => {
       const width = host.clientWidth;
@@ -28,8 +45,7 @@
     };
 
     const animate = () => {
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.014;
+      controls.update();
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
