@@ -34,19 +34,25 @@ $$
 
 <ChartDemo />
 
-## 视频
+## B 站视频
 
-可以直接写 HTML 的 `<video>`。这里用浏览器原生播放器做占位模板，你以后把 `src` 换成自己的视频文件即可。
+这是嵌入的 B 站播放器。视频不存放在这个 GitHub 仓库里，访问者加载的是 B 站的视频资源。
+
+<iframe
+  src="https://player.bilibili.com/player.html?bvid=BV1wpR1BqEbm&page=1"
+  title="Bilibili video player"
+  allowfullscreen
+></iframe>
+
+## 本地视频模板
+
+如果视频文件比较小，也可以放到项目的 `public/videos` 目录里，然后用浏览器原生播放器引用。
 
 ```html
 <video controls src="/videos/demo.mp4"></video>
 ```
 
-也可以嵌入 B 站或 YouTube 的 iframe。
-
-```html
-<iframe src="https://www.youtube.com/embed/VIDEO_ID"></iframe>
-```
+但不要写 `C:\Users\...` 这种本机路径。别人访问公网网站时，浏览器访问不到你的电脑文件。
 
 ## 动图
 
