@@ -1,0 +1,40 @@
+<figure class="chart-demo">
+  <canvas id="writing-chart" aria-label="博客内容类型示例图"></canvas>
+</figure>
+
+<script>
+  import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
+
+  Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
+
+  const canvas = document.querySelector('#writing-chart');
+
+  if (canvas instanceof HTMLCanvasElement) {
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: ['技术笔记', '项目复盘', '思考随笔', '实验 Demo'],
+        datasets: [
+          {
+            label: '计划写作比例',
+            data: [42, 26, 22, 10],
+            backgroundColor: ['#0f766e', '#2563eb', '#b45309', '#7c3aed'],
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { callback: (value) => `${value}%` },
+          },
+        },
+      },
+    });
+  }
+</script>

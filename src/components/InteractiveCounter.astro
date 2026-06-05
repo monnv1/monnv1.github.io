@@ -1,0 +1,20 @@
+<div class="interactive-demo" data-counter>
+  <p class="demo-kicker">Interactive Component</p>
+  <strong>你点了 <span data-count>0</span> 次</strong>
+  <button type="button" data-button>增加一次</button>
+</div>
+
+<script>
+  const demos = document.querySelectorAll('[data-counter]');
+
+  demos.forEach((demo) => {
+    const count = demo.querySelector('[data-count]');
+    const button = demo.querySelector('[data-button]');
+    let value = 0;
+
+    button?.addEventListener('click', () => {
+      value += 1;
+      if (count) count.textContent = String(value);
+    });
+  });
+</script>

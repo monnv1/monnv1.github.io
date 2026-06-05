@@ -1,0 +1,41 @@
+<div class="three-demo" data-three-demo aria-label="Three.js 旋转立方体演示"></div>
+
+<script>
+  import * as THREE from 'three';
+
+  const host = document.querySelector('[data-three-demo]');
+
+  if (host instanceof HTMLElement) {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(1.3, 1.3, 1.3),
+      new THREE.MeshNormalMaterial()
+    );
+
+    scene.add(cube);
+    camera.position.z = 3;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    host.appendChild(renderer.domElement);
+
+    const resize = () => {
+      const width = host.clientWidth;
+      const height = host.clientHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+
+    const animate = () => {
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.014;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    animate();
+  }
+</script>

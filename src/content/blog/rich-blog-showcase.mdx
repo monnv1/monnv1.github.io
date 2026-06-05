@@ -1,0 +1,81 @@
+---
+title: "升级版博客能力展示：公式、图表、视频、3D 和交互"
+description: "这篇文章展示 MDX 带来的传统网页能力：数学公式、Mermaid、图表、视频、动图、Three.js 和互动组件。"
+pubDate: 2026-06-05
+tags: ["MDX", "KaTeX", "Mermaid", "Three.js", "Chart.js"]
+---
+
+import InteractiveCounter from '../../components/InteractiveCounter.astro';
+import MermaidDiagram from '../../components/MermaidDiagram.astro';
+import ChartDemo from '../../components/ChartDemo.astro';
+import ThreeDemo from '../../components/ThreeDemo.astro';
+
+普通文章继续写 `.md` 就够了；当一篇文章需要网页级表达时，可以写 `.mdx`，在正文里插入组件。
+
+## 数学公式
+
+行内公式：$E = mc^2$。
+
+块级公式：
+
+$$
+\int_0^1 x^2 dx = \frac{1}{3}
+$$
+
+## Mermaid 图
+
+<MermaidDiagram chart={`flowchart LR
+  A[写 Markdown] --> B[需要交互?]
+  B -->|不需要| C[继续使用 .md]
+  B -->|需要| D[改用 .mdx]
+  D --> E[插入 Astro 组件]`} />
+
+## 图表
+
+<ChartDemo />
+
+## 视频
+
+可以直接写 HTML 的 `<video>`。这里用浏览器原生播放器做占位模板，你以后把 `src` 换成自己的视频文件即可。
+
+```html
+<video controls src="/videos/demo.mp4"></video>
+```
+
+也可以嵌入 B 站或 YouTube 的 iframe。
+
+```html
+<iframe src="https://www.youtube.com/embed/VIDEO_ID"></iframe>
+```
+
+## 动图
+
+动图可以直接用 Markdown 图片语法：
+
+```md
+![演示动图](/images/demo.webp)
+```
+
+建议优先用 `.webp`，体积通常比 `.gif` 更友好。
+
+## 互动组件
+
+<InteractiveCounter />
+
+## 3D 渲染
+
+<ThreeDemo />
+
+## 代码高亮
+
+Astro 自带代码高亮，普通 Markdown 代码块就能工作。
+
+```ts
+type PostKind = 'note' | 'essay' | 'demo';
+
+const publish = (kind: PostKind) => {
+  return `Publishing ${kind}`;
+};
+```
+
+这套组合的重点是：日常写作保持简单，需要高级表达时再使用组件。

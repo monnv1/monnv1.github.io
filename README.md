@@ -28,6 +28,8 @@ tags: ["Astro", "技术"]
 
 Technical notes, project reviews, learning logs, reading notes, and reflective essays can all live in the same blog. Use `tags` to separate topics.
 
+Use `.md` for normal writing and `.mdx` when an article needs components such as formulas, charts, diagrams, video, 3D scenes, or interactive demos. See `src/content/blog/rich-blog-showcase.mdx` for examples.
+
 ## Edit Personal Info
 
 - Change the name and links in `src/layouts/BaseLayout.astro`.

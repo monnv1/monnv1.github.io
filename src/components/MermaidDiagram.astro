@@ -1,0 +1,22 @@
+---
+type Props = {
+  chart: string;
+};
+
+const { chart } = Astro.props;
+---
+
+<div class="mermaid-diagram" data-mermaid>{chart}</div>
+
+<script>
+  import mermaid from 'mermaid';
+
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'neutral',
+    securityLevel: 'strict',
+  });
+
+  const diagrams = document.querySelectorAll('[data-mermaid]');
+  mermaid.run({ nodes: Array.from(diagrams) });
+</script>
