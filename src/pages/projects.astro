@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects } from '../data/projects';
+---
+
+<BaseLayout title="项目" description="项目、作品和实验记录。">
+  <section class="page-heading">
+    <h1>项目</h1>
+    <p>这里放你的开源项目、作品、工具、课程项目或实验记录。</p>
+  </section>
+
+  <section class="project-grid">
+    {
+      projects.map((project) => (
+        <article class="project-card">
+          <h2>{project.href ? <a href={project.href}>{project.title}</a> : project.title}</h2>
+          <p>{project.description}</p>
+          <div class="tags">
+            {project.tags.map((tag) => <span>{tag}</span>)}
+          </div>
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>
