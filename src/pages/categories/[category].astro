@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { slugify, sortPostsByDate, unslugify } from '../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const categories = Array.from(new Set(posts.map((post) => post.data.category)));
+
+  return categories.map((category) => ({
+    params: { category: slugify(category) },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+const posts = sortPostsByDate(
+  (await getCollection('blog')).filter((post) => post.data.category === category)
+);
+const decodedCategory = unslugify(Astro.params.category ?? category);
+---
+
+<BaseLayout title={decodedCategory} description={`分类：${decodedCategory}`}>
+  <section class="page-heading">
+    <a class="back-link" href="/categories/">全部分类</a>
+    <h1>{decodedCategory}</h1>
+    <p>{posts.length} 篇文章。</p>
+  </section>
+
+  <section class="post-list">
+    {posts.map((post) => (
+      <article class="post-card">
+        <div class="post-meta">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString('zh-CN')}
+          </time>
+        </div>
+        <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
+        <p>{post.data.description}</p>
+        {post.data.series && <p class="series">系列：{post.data.series}</p>}
+        <div class="tags">
+          {post.data.tags.map((tag) => (
+            <a href={`/tags/${slugify(tag)}/`}>{tag}</a>
+          ))}
+        </div>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

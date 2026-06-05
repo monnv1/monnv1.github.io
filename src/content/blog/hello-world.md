@@ -2,6 +2,7 @@
 title: "我的第一篇博客"
 description: "记录这个个人主页的开始，也作为以后写 Markdown 文章的模板。"
 pubDate: 2026-06-05
+category: "技术学习"
 tags: ["Astro", "个人主页", "写作"]
 ---
 

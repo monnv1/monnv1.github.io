@@ -2,10 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { projects } from '../data/projects';
+import { slugify, sortPostsByDate } from '../lib/blog';
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const posts = sortPostsByDate(await getCollection('blog')).slice(0, 3);
 ---
 
 <BaseLayout title="个人主页" description="技术博客、项目记录和个人思考。">
@@ -13,7 +12,7 @@ const posts = (await getCollection('blog'))
     <p class="eyebrow">Personal Homepage</p>
     <h1>你好，我是 Your Name。</h1>
     <p class="hero-copy">
-      我在这里记录技术学习、项目实践和一些长期思考。这个网站用 Astro 和 Markdown 搭建，保持简单、快速、可维护。
+      我在这里记录技术学习、项目实践和一些长期思考。这个网站用 Astro 和 Markdown/MDX 搭建，保持简单、快速、可维护。
     </p>
     <div class="actions">
       <a class="button primary" href="/blog/">阅读博客</a>
@@ -30,13 +29,20 @@ const posts = (await getCollection('blog'))
       {
         posts.map((post) => (
           <article class="post-card">
-            <time datetime={post.data.pubDate.toISOString()}>
-              {post.data.pubDate.toLocaleDateString('zh-CN')}
-            </time>
+            <div class="post-meta">
+              <a class="category-link" href={`/categories/${slugify(post.data.category)}/`}>
+                {post.data.category}
+              </a>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('zh-CN')}
+              </time>
+            </div>
             <h3><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h3>
             <p>{post.data.description}</p>
             <div class="tags">
-              {post.data.tags.map((tag) => <span>{tag}</span>)}
+              {post.data.tags.map((tag) => (
+                <a href={`/tags/${slugify(tag)}/`}>{tag}</a>
+              ))}
             </div>
           </article>
         ))

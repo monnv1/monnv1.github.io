@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTagCounts, slugify } from '../../lib/blog';
+
+const posts = await getCollection('blog');
+const tags = getTagCounts(posts);
+---
+
+<BaseLayout title="标签" description="按技术主题浏览博客。">
+  <section class="page-heading">
+    <h1>标签</h1>
+    <p>标签用来标记具体技术、工具、项目、方法和主题。</p>
+  </section>
+
+  <section class="taxonomy-grid compact">
+    {tags.map(([tag, count]) => (
+      <a class="taxonomy-card" href={`/tags/${slugify(tag)}/`}>
+        <span>{count} 篇</span>
+        <h2>{tag}</h2>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

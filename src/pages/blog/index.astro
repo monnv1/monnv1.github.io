@@ -1,28 +1,61 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCategoryCounts, getTagCounts, slugify, sortPostsByDate } from '../../lib/blog';
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = sortPostsByDate(await getCollection('blog'));
+const categories = getCategoryCounts(posts);
+const tags = getTagCounts(posts).slice(0, 12);
 ---
 
 <BaseLayout title="博客" description="技术文章、学习笔记、项目复盘和个人思考。">
   <section class="page-heading">
     <h1>博客</h1>
-    <p>技术文章、学习笔记、项目复盘，也包括一些个人思考。</p>
+    <p>技术学习、复现记录、项目复盘和一些更新频率更低但更深入的技术思考。</p>
+  </section>
+
+  <section class="taxonomy-panel" aria-label="文章分类和标签">
+    <div>
+      <h2>分类</h2>
+      <div class="taxonomy-links">
+        {categories.map(([category, count]) => (
+          <a href={`/categories/${slugify(category)}/`}>
+            {category}<span>{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div>
+      <h2>常用标签</h2>
+      <div class="taxonomy-links">
+        {tags.map(([tag, count]) => (
+          <a href={`/tags/${slugify(tag)}/`}>
+            {tag}<span>{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
   </section>
 
   <section class="post-list">
     {
       posts.map((post) => (
         <article class="post-card">
-          <time datetime={post.data.pubDate.toISOString()}>
-            {post.data.pubDate.toLocaleDateString('zh-CN')}
-          </time>
+          <div class="post-meta">
+            <a class="category-link" href={`/categories/${slugify(post.data.category)}/`}>
+              {post.data.category}
+            </a>
+            <time datetime={post.data.pubDate.toISOString()}>
+              {post.data.pubDate.toLocaleDateString('zh-CN')}
+            </time>
+          </div>
           <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
           <p>{post.data.description}</p>
+          {post.data.series && <p class="series">系列：{post.data.series}</p>}
           <div class="tags">
-            {post.data.tags.map((tag) => <span>{tag}</span>)}
+            {post.data.tags.map((tag) => (
+              <a href={`/tags/${slugify(tag)}/`}>{tag}</a>
+            ))}
           </div>
         </article>
       ))

@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCategoryCounts, slugify } from '../../lib/blog';
+
+const posts = await getCollection('blog');
+const categories = getCategoryCounts(posts);
+---
+
+<BaseLayout title="分类" description="按文章类型浏览博客。">
+  <section class="page-heading">
+    <h1>分类</h1>
+    <p>用分类区分写作节奏：高频记录、系统学习、阶段复盘和低频思考。</p>
+  </section>
+
+  <section class="taxonomy-grid">
+    {categories.map(([category, count]) => (
+      <a class="taxonomy-card" href={`/categories/${slugify(category)}/`}>
+        <span>{count} 篇</span>
+        <h2>{category}</h2>
+      </a>
+    ))}
+  </section>
+</BaseLayout>
