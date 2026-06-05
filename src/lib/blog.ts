@@ -3,7 +3,10 @@ import type { CollectionEntry } from 'astro:content';
 export type BlogPost = CollectionEntry<'blog'>;
 
 export const sortPostsByDate = (posts: BlogPost[]) =>
-  posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  [...posts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+export const getVisiblePosts = (posts: BlogPost[]) =>
+  import.meta.env.PROD ? posts.filter((post) => !post.data.draft) : posts;
 
 export const slugify = (value: string) => encodeURIComponent(value);
 

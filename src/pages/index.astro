@@ -2,9 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { projects } from '../data/projects';
-import { slugify, sortPostsByDate } from '../lib/blog';
+import { getVisiblePosts, slugify, sortPostsByDate } from '../lib/blog';
 
-const posts = sortPostsByDate(await getCollection('blog')).slice(0, 3);
+const posts = sortPostsByDate(getVisiblePosts(await getCollection('blog'))).slice(0, 3);
 ---
 
 <BaseLayout title="个人主页" description="技术博客、项目记录和个人思考。">

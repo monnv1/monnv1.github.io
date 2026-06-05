@@ -1,10 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { slugify, sortPostsByDate, unslugify } from '../../lib/blog';
+import { getVisiblePosts, slugify, sortPostsByDate, unslugify } from '../../lib/blog';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = getVisiblePosts(await getCollection('blog'));
   const categories = Array.from(new Set(posts.map((post) => post.data.category)));
 
   return categories.map((category) => ({
@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { category } = Astro.props;
 const posts = sortPostsByDate(
-  (await getCollection('blog')).filter((post) => post.data.category === category)
+  getVisiblePosts(await getCollection('blog')).filter((post) => post.data.category === category)
 );
 const decodedCategory = unslugify(Astro.params.category ?? category);
 ---

@@ -27,13 +27,18 @@ const pageTitle = title === '个人主页' ? title : `${title} | 个人主页`;
     <header class="site-header">
       <a class="brand" href="/">Your Name</a>
       <nav class="nav" aria-label="Primary navigation">
-        <a href="/">首页</a>
-        <a href="/blog/">博客</a>
-        <a href="/categories/">分类</a>
-        <a href="/tags/">标签</a>
-        <a href="/projects/">项目</a>
-        <a href="/about/">关于</a>
+        <a href="/" data-i18n="nav.home">首页</a>
+        <a href="/blog/" data-i18n="nav.blog">博客</a>
+        <a href="/categories/" data-i18n="nav.categories">分类</a>
+        <a href="/tags/" data-i18n="nav.tags">标签</a>
+        <a href="/search/" data-i18n="nav.search">搜索</a>
+        <a href="/projects/" data-i18n="nav.projects">项目</a>
+        <a href="/about/" data-i18n="nav.about">关于</a>
       </nav>
+      <div class="language-switch" aria-label="Language switch">
+        <button type="button" data-lang-button="zh">中</button>
+        <button type="button" data-lang-button="en">EN</button>
+      </div>
     </header>
     <main class="site-main">
       <slot />
@@ -45,5 +50,71 @@ const pageTitle = title === '个人主页' ? title : `${title} | 个人主页`;
         <a href="mailto:you@example.com">Email</a>
       </div>
     </footer>
+    <script>
+      const translations = {
+        zh: {
+          'nav.home': '首页',
+          'nav.blog': '博客',
+          'nav.categories': '分类',
+          'nav.tags': '标签',
+          'nav.search': '搜索',
+          'nav.projects': '项目',
+          'nav.about': '关于',
+          'search.title': '搜索',
+          'search.description': '按关键词和标签过滤文章。',
+          'search.input': '搜索标题、摘要、分类、标签',
+          'search.allTags': '全部标签',
+          'search.count': '篇文章',
+          'search.empty': '没有找到匹配的文章。',
+        },
+        en: {
+          'nav.home': 'Home',
+          'nav.blog': 'Blog',
+          'nav.categories': 'Categories',
+          'nav.tags': 'Tags',
+          'nav.search': 'Search',
+          'nav.projects': 'Projects',
+          'nav.about': 'About',
+          'search.title': 'Search',
+          'search.description': 'Filter posts by keyword and tag.',
+          'search.input': 'Search title, description, category, or tags',
+          'search.allTags': 'All tags',
+          'search.count': 'posts',
+          'search.empty': 'No matching posts.',
+        },
+      };
+
+      const applyLanguage = (language) => {
+        const dictionary = translations[language] ?? translations.zh;
+        document.documentElement.dataset.language = language;
+        localStorage.setItem('language', language);
+
+        document.querySelectorAll('[data-i18n]').forEach((node) => {
+          const key = node.getAttribute('data-i18n');
+          if (key && dictionary[key]) node.textContent = dictionary[key];
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+          const key = node.getAttribute('data-i18n-placeholder');
+          if (key && dictionary[key] && node instanceof HTMLInputElement) {
+            node.placeholder = dictionary[key];
+          }
+        });
+
+        document.querySelectorAll('[data-lang-button]').forEach((button) => {
+          button.toggleAttribute('aria-current', button.getAttribute('data-lang-button') === language);
+        });
+
+        window.dispatchEvent(new CustomEvent('languagechange', { detail: { language } }));
+      };
+
+      document.querySelectorAll('[data-lang-button]').forEach((button) => {
+        button.addEventListener('click', () => {
+          applyLanguage(button.getAttribute('data-lang-button') ?? 'zh');
+        });
+      });
+
+      applyLanguage(localStorage.getItem('language') ?? 'zh');
+    </script>
   </body>
 </html>

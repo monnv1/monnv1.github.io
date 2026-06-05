@@ -30,6 +30,28 @@ Technical notes, project reviews, learning logs, reading notes, and reflective e
 
 Use `.md` for normal writing and `.mdx` when an article needs components such as formulas, charts, diagrams, video, 3D scenes, or interactive demos. See `src/content/blog/rich-blog-showcase.mdx` for examples.
 
+## Categories, Tags, and Drafts
+
+Use one `category` for the article type and multiple `tags` for specific topics.
+
+```md
+---
+title: "复现记录 Day 1"
+description: "环境配置和第一轮报错。"
+pubDate: 2026-06-05
+category: "复现记录"
+tags: ["论文复现", "PyTorch"]
+series: "Paper-X 复现"
+draft: true
+---
+```
+
+`draft: true` posts are visible in local development but excluded from the production GitHub Pages build.
+
+For truly private notes, use `local-drafts/`. That folder is ignored by Git and will not be pushed to the public repository.
+
+Do not commit private content to a public GitHub repository. Even if a post has `draft: true`, the source file is still visible on GitHub if you commit and push it.
+
 ## Edit Personal Info
 
 - Change the name and links in `src/layouts/BaseLayout.astro`.

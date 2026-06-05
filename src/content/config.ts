@@ -9,6 +9,7 @@ const blog = defineCollection({
     category: z.string().default('技术学习'),
     tags: z.array(z.string()).default([]),
     series: z.string().optional(),
+    draft: z.boolean().default(false),
   }),
 });
 

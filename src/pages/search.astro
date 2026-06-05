@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTagCounts, getVisiblePosts, slugify, sortPostsByDate } from '../lib/blog';
+
+const posts = sortPostsByDate(getVisiblePosts(await getCollection('blog')));
+const tags = getTagCounts(posts).map(([tag]) => tag);
+const searchPosts = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  category: post.data.category,
+  tags: post.data.tags,
+  date: post.data.pubDate.toLocaleDateString('zh-CN'),
+  url: `/blog/${post.slug}/`,
+}));
+---
+
+<BaseLayout title="搜索" description="按关键词和标签过滤文章。">
+  <section class="page-heading">
+    <h1 data-i18n="search.title">搜索</h1>
+    <p data-i18n="search.description">按关键词和标签过滤文章。</p>
+  </section>
+
+  <section class="search-panel" data-search-root>
+    <div class="search-controls">
+      <label>
+        <span>Keyword</span>
+        <input
+          type="search"
+          data-search-input
+          data-i18n-placeholder="search.input"
+          placeholder="搜索标题、摘要、分类、标签"
+        />
+      </label>
+      <label>
+        <span>Tag</span>
+        <select data-search-tag>
+          <option value="" data-i18n="search.allTags">全部标签</option>
+          {tags.map((tag) => <option value={tag}>{tag}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="tag-filter-list" aria-label="Tag filters">
+      <button type="button" data-tag-chip="" aria-current="true" data-i18n="search.allTags">全部标签</button>
+      {tags.map((tag) => <button type="button" data-tag-chip={tag}>{tag}</button>)}
+    </div>
+
+    <p class="search-count" data-search-count></p>
+    <div class="post-list" data-search-results></div>
+  </section>
+
+  <script define:vars={{ searchPosts, slugBase: '/tags/' }}>
+    const root = document.querySelector('[data-search-root]');
+    const input = root?.querySelector('[data-search-input]');
+    const select = root?.querySelector('[data-search-tag]');
+    const results = root?.querySelector('[data-search-results]');
+    const count = root?.querySelector('[data-search-count]');
+    const chips = Array.from(root?.querySelectorAll('[data-tag-chip]') ?? []);
+
+    const getLanguage = () => document.documentElement.dataset.language ?? 'zh';
+    const copy = {
+      zh: { count: '篇文章', empty: '没有找到匹配的文章。' },
+      en: { count: 'posts', empty: 'No matching posts.' },
+    };
+
+    const escapeHtml = (value) =>
+      value.replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      }[char]));
+
+    const render = () => {
+      if (!(input instanceof HTMLInputElement) || !(select instanceof HTMLSelectElement) || !results || !count) {
+        return;
+      }
+
+      const query = input.value.trim().toLowerCase();
+      const selectedTag = select.value;
+      const filtered = searchPosts.filter((post) => {
+        const haystack = [
+          post.title,
+          post.description,
+          post.category,
+          ...post.tags,
+        ].join(' ').toLowerCase();
+
+        return (!query || haystack.includes(query)) && (!selectedTag || post.tags.includes(selectedTag));
+      });
+
+      const language = getLanguage();
+      count.textContent = `${filtered.length} ${copy[language].count}`;
+
+      results.innerHTML = filtered.length
+        ? filtered.map((post) => `
+          <article class="post-card">
+            <div class="post-meta">
+              <span class="category-link">${escapeHtml(post.category)}</span>
+              <time>${escapeHtml(post.date)}</time>
+            </div>
+            <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
+            <p>${escapeHtml(post.description)}</p>
+            <div class="tags">
+              ${post.tags.map((tag) => `<a href="${slugBase}${encodeURIComponent(tag)}/">${escapeHtml(tag)}</a>`).join('')}
+            </div>
+          </article>
+        `).join('')
+        : `<p class="empty-state">${copy[language].empty}</p>`;
+    };
+
+    input?.addEventListener('input', render);
+    select?.addEventListener('change', () => {
+      chips.forEach((chip) => {
+        chip.toggleAttribute('aria-current', chip.getAttribute('data-tag-chip') === select.value);
+      });
+      render();
+    });
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        if (select instanceof HTMLSelectElement) {
+          select.value = chip.getAttribute('data-tag-chip') ?? '';
+          select.dispatchEvent(new Event('change'));
+        }
+      });
+    });
+
+    window.addEventListener('languagechange', render);
+    render();
+  </script>
+</BaseLayout>

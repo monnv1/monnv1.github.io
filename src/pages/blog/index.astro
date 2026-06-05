@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCategoryCounts, getTagCounts, slugify, sortPostsByDate } from '../../lib/blog';
+import { getCategoryCounts, getTagCounts, getVisiblePosts, slugify, sortPostsByDate } from '../../lib/blog';
 
-const posts = sortPostsByDate(await getCollection('blog'));
+const posts = sortPostsByDate(getVisiblePosts(await getCollection('blog')));
 const categories = getCategoryCounts(posts);
 const tags = getTagCounts(posts).slice(0, 12);
 ---
